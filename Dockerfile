@@ -3,8 +3,15 @@
 # so it must run in dev mode) and serves it on the add-on ingress port.
 FROM node:24-slim
 
-# The add-on repo only carries the add-on files; the app itself is cloned here
-# at build time (pinned to main) so the package it ships stays small and current.
+# Supervisor 2026.04+ no longer injects these labels automatically for build
+# add-ons, and we do NOT use the HA base image - so set them explicitly.
+LABEL \
+  io.hass.version="0.1.0" \
+  io.hass.type="app" \
+  io.hass.arch="amd64"
+
+# git/ca-certificates needed to clone the app at build; ca-certificates also
+# required at runtime for the app's HTTPS upstream API proxies.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
