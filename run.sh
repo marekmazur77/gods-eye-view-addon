@@ -16,12 +16,23 @@ except Exception:
 "
 }
 
-export GOOGLE_MAPS_API_KEY="$(read_opt google_maps_api_key)"
-export OPENAI_API_KEY="$(read_opt openai_api_key)"
-export AISSTREAM_API_KEY="$(read_opt aisstream_api_key)"
-export FIRMS_MAP_KEY="$(read_opt firms_map_key)"
-export CESIUM_ION_TOKEN="$(read_opt cesium_ion_token)"
-export TOMTOM_API_KEY="$(read_opt tomtom_api_key)"
+GOOGLE_MAPS_API_KEY="$(read_opt google_maps_api_key)"
+OPENAI_API_KEY="$(read_opt openai_api_key)"
+AISSTREAM_API_KEY="$(read_opt aisstream_api_key)"
+FIRMS_MAP_KEY="$(read_opt firms_map_key)"
+CESIUM_ION_TOKEN="$(read_opt cesium_ion_token)"
+TOMTOM_API_KEY="$(read_opt tomtom_api_key)"
+
+# Vite dev reads .env (not process.env) for import.meta.env.* when the var has no
+# VITE_ prefix and the config's define targets import.meta.env.GOOGLE_MAPS_API_KEY.
+cat > /app/.env <<EOF
+GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
+OPENAI_API_KEY=${OPENAI_API_KEY}
+AISSTREAM_API_KEY=${AISSTREAM_API_KEY}
+FIRMS_MAP_KEY=${FIRMS_MAP_KEY}
+CESIUM_ION_TOKEN=${CESIUM_ION_TOKEN}
+TOMTOM_API_KEY=${TOMTOM_API_KEY}
+EOF
 
 HOST=0.0.0.0
 PORT=5173
