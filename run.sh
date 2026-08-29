@@ -26,19 +26,27 @@ FIRMS_MAP_KEY="$(read_opt firms_map_key)"
 CESIUM_ION_TOKEN="$(read_opt cesium_ion_token)"
 TOMTOM_API_KEY="$(read_opt tomtom_api_key)"
 
-# Vite dev reads .env (not process.env) for import.meta.env.* when the var has no
-# VITE_ prefix and the config's define targets import.meta.env.GOOGLE_MAPS_API_KEY.
-cat > /app/.env <<EOF
-GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
-OPENAI_API_KEY=${OPENAI_API_KEY}
-AISSTREAM_API_KEY=${AISSTREAM_API_KEY}
-FIRMS_MAP_KEY=${FIRMS_MAP_KEY}
-CESIUM_ION_TOKEN=${CESIUM_ION_TOKEN}
-TOMTOM_API_KEY=${TOMTOM_API_KEY}
-EOF
+# Server-side keys are consumed by the app's upstream proxies via process.env.
+export OPENAI_API_KEY
+export AISSTREAM_API_KEY
+export FIRMS_MAP_KEY
+export CESIUM_ION_TOKEN
+export TOMTOM_API_KEY
+export GOOGLE_MAPS_API_KEY
+
+# The built bundle has a sentinel (__GEV_GOOGLE_KEY__) in place of the Google key.
+# Replace it with the real key so the 3D tiles load.
+if [ -n "$GOOGLE_MAPS_API_KEY" ]; then
+  grep -rl '__GEV_GOOGLE_KEY__' /app/dist 2>/dev/null | while read -r f; do
+    sed -i "s#__GEV_GOOGLE_KEY__#${GOOGLE_MAPS_API_KEY}#g" "$f"
+  done
+  echo "Google Maps key injected into build."
+else
+  echo "WARN: no Google Maps API key configured; 3D tiles will not load."
+fi
 
 export HOST=0.0.0.0
 export PORT=5173
 
 echo "God's Eye View starting on ${HOST}:${PORT}"
-exec npm run dev -- --host "${HOST}" --port "${PORT}"
+exec npm run preview -- --host "${HOST}" --port "${PORT}"
