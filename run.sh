@@ -37,8 +37,8 @@ CESIUM_ION_TOKEN=${CESIUM_ION_TOKEN}
 TOMTOM_API_KEY=${TOMTOM_API_KEY}
 EOF
 
-EXPORT HOST=0.0.0.0
-EXPORT PORT=5173
+export HOST=0.0.0.0
+export PORT=5173
 
 echo "God's Eye View starting on ${HOST}:${PORT}"
 exec npm run dev -- --host "${HOST}" --port "${PORT}"
