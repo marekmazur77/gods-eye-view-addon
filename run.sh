@@ -5,14 +5,17 @@ cd /app
 
 OPTIONS=/data/options.json
 
+# The image is node:24-slim (no python3). Read an option from options.json
+# using node, which IS present.
 read_opt() {
-  python3 -c "
-import json, sys
-try:
-    d = json.load(open('$OPTIONS'))
-    print(d.get('$1', ''))
-except Exception:
-    print('')
+  node -e "
+const fs = require('fs');
+try {
+  const d = JSON.parse(fs.readFileSync('$OPTIONS', 'utf8'));
+  process.stdout.write(String(d['$1'] || ''));
+} catch (e) {
+  process.stdout.write('');
+}
 "
 }
 
