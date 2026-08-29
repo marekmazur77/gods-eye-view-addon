@@ -1,0 +1,32 @@
+name: God's Eye View
+version: 0.1.0
+slug: gods-eye-view
+description: >
+  Live photorealistic 3D globe - flights, ships, satellites, earthquakes,
+  traffic and public cameras from public open data.
+url: https://github.com/marekmazur77/gods-eye-view-addon
+arch:
+  - amd64
+build: true
+panel: true
+panel_icon: mdi:earth
+ingress: true
+ingress_port: 5173
+homeassistant_api: false
+init: false
+map:
+  config: share
+options:
+  google_maps_api_key: ""
+  openai_api_key: ""
+  aisstream_api_key: ""
+  firms_map_key: ""
+  cesium_ion_token: ""
+  tomtom_api_key: ""
+schema:
+  google_maps_api_key: str
+  openai_api_key: str
+  aisstream_api_key: str
+  firms_map_key: str
+  cesium_ion_token: str
+  tomtom_api_key: str
