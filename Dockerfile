@@ -4,7 +4,7 @@
 FROM node:24-slim
 
 LABEL \
-  io.hass.version="0.1.6" \
+  io.hass.version="0.1.7" \
   io.hass.type="app" \
   io.hass.arch="amd64"
 
@@ -19,6 +19,12 @@ RUN git clone --depth 1 https://github.com/bilawalsidhu/gods-eye-view.git /app \
     && npm ci \
     && sed -i 's/onlyUsingWithGoogleGeocoder: true/onlyUsingWithGoogleGeocoder: false/' src/main.js \
     && sed -i 's/^    server: {/    base: '"'"'.\/'"'"',\n    server: {/' vite.config.js \
+    # The app's index.html hardcodes absolute asset paths (/style.css, /src/main.js,
+    # /@vite/client, /logo.svg, /pin.svg). Behind HA's ingress prefix (/app/<slug>/)
+    # those resolve to the HA root and 404, so the JS never runs and the globe is
+    # stuck on "Initializing". Rewrite them to relative paths so they resolve under
+    # the ingress subpath.
+    && sed -i 's#href="/#href="./#g; s#src="/#src="./#g; s#data-logo-src="/#data-logo-src="./#g' index.html \
     && npx vite optimize
 
 COPY run.sh /run.sh
